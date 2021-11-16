@@ -42,6 +42,12 @@ class SQLHelper {
     return db.query('notes', where: "id = ?", whereArgs: [id], limit: 1);
   }
 
+  //search by title
+  static Future<List<Map<String, dynamic>>> searchItem(String data) async {
+    final db = await SQLHelper.db();
+    return db.query('notes', where: "title = ?", whereArgs: [data]);
+  }
+
   //Update an item by id
   static Future<int> updateItem(
       int id, String title, String description) async {

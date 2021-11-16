@@ -142,6 +142,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _refreshJournals();
   }
 
+// search item
+  Future<void> _searchItem() async {
+    await SQLHelper.searchItem(_titleController.text);
+    _refreshJournals();
+  }
+
   // Update an existing journal
   Future<void> _updateItem(int id) async {
     await SQLHelper.updateItem(
