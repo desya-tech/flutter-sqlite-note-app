@@ -241,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 : ListView.builder(
                     itemCount: _note.length,
                     itemBuilder: (context, index) => Card(
-                      // color: Colors.orange[200],
+                      color: Colors.white60,
                       // margin: const EdgeInsets.all(15),
                       child: ListTile(
                         title: Text(_note[index]['title']),
