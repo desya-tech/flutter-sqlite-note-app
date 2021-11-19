@@ -45,7 +45,7 @@ class SQLHelper {
   //search by title
   static Future<List<Map<String, dynamic>>> searchItem(String data) async {
     final db = await SQLHelper.db();
-    return db.query('notes', where: "title = ?", whereArgs: [data]);
+    return db.query('notes', where: "title like ?", whereArgs: ['%$data%']);
   }
 
   //Update an item by id

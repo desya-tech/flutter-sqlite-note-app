@@ -54,11 +54,19 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoading = true;
   // This function is used to fetch all data from the database
   void _refreshJournals() async {
-    final data = await SQLHelper.getItems();
-    setState(() {
-      _note = data;
-      _isLoading = false;
-    });
+    if (_searchController.text.isNotEmpty) {
+      final data = await SQLHelper.searchItem(_searchController.text);
+      setState(() {
+        _note = data;
+        _isLoading = false;
+      });
+    } else {
+      final data = await SQLHelper.getItems();
+      setState(() {
+        _note = data;
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -69,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   // This function will be triggered when the floating button is pressed
   // It will also be triggered when you want to update an item
@@ -209,37 +218,55 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: 'Show Snackbar')
         ],
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemCount: _note.length,
-              itemBuilder: (context, index) => Card(
-                color: Colors.orange[200],
-                margin: const EdgeInsets.all(15),
-                child: ListTile(
-                  title: Text(_note[index]['title']),
-                  subtitle: Text(_note[index]['description']),
-                  trailing: SizedBox(
-                    width: 100,
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => _showForm(_note[index]['id']),
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              onChanged: (text) {
+                _refreshJournals();
+              },
+              controller: _searchController,
+              decoration: InputDecoration(
+                  hintText: 'Cari catatan...',
+                  suffixIcon:
+                      IconButton(onPressed: () {}, icon: Icon(Icons.search))),
+            ),
+          ),
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ListView.builder(
+                    itemCount: _note.length,
+                    itemBuilder: (context, index) => Card(
+                      // color: Colors.orange[200],
+                      // margin: const EdgeInsets.all(15),
+                      child: ListTile(
+                        title: Text(_note[index]['title']),
+                        subtitle: Text(_note[index]['description']),
+                        trailing: SizedBox(
+                          width: 100,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => _showForm(_note[index]['id']),
+                              ),
+                              IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () =>
+                                      _showMyDialog(_note[index]['id'])),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _showMyDialog(_note[index]['id'])
-                            // => _deleteItem(_note[index]['id']),
-                            ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () => _showForm(null),
