@@ -139,6 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _addItem() async {
     await SQLHelper.createItem(
         _titleController.text, _descriptionController.text);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Save Successcully')));
     _refreshJournals();
   }
 
@@ -152,6 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateItem(int id) async {
     await SQLHelper.updateItem(
         id, _titleController.text, _descriptionController.text);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Update successfully')));
     _refreshJournals();
   }
 
@@ -164,11 +168,46 @@ class _MyHomePageState extends State<MyHomePage> {
     _refreshJournals();
   }
 
+  Future<void> _showMyDialog(int id) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                // Text('This is a demo alert dialog.'),
+                Text('Are You Sure to Delete This data'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                _deleteItem(id);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Note'),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Show Snackbar')
+        ],
       ),
       body: _isLoading
           ? const Center(
@@ -180,23 +219,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.orange[200],
                 margin: const EdgeInsets.all(15),
                 child: ListTile(
-                    title: Text(_note[index]['title']),
-                    subtitle: Text(_note[index]['description']),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _showForm(_note[index]['id']),
-                          ),
-                          IconButton(
+                  title: Text(_note[index]['title']),
+                  subtitle: Text(_note[index]['description']),
+                  trailing: SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _showForm(_note[index]['id']),
+                        ),
+                        IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () => _deleteItem(_note[index]['id']),
-                          ),
-                        ],
-                      ),
-                    )),
+                            onPressed: () => _showMyDialog(_note[index]['id'])
+                            // => _deleteItem(_note[index]['id']),
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
       floatingActionButton: FloatingActionButton(
