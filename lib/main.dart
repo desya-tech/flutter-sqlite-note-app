@@ -217,6 +217,11 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: const Icon(Icons.refresh),
               tooltip: 'Show Snackbar')
         ],
+        bottom: TabBar(tabs: [
+          Tab(icon: Icon(Icons.directions_car)),
+          Tab(icon: Icon(Icons.directions_transit)),
+          Tab(icon: Icon(Icons.directions_bike)),
+        ]),
       ),
       body: Column(
         children: <Widget>[
@@ -242,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemCount: _note.length,
                     itemBuilder: (context, index) => Card(
                       color: Colors.white,
-                      // margin: const EdgeInsets.all(15),
+                      // margin: const EdgeInsets.all(10),
                       child: ListTile(
                         title: Text(_note[index]['title']),
                         subtitle: Text(_note[index]['description']),
